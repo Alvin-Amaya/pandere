@@ -27,7 +27,14 @@ export class Enterprise extends Actor {
     ) { super(id, email) }
 }
 
-export class User extends Actor {}
+export class User extends Actor {
+    constructor(
+        id: number,
+        email: string,
+        public nickname: string,
+        public password: string,
+    ) { super(id, email) }
+}
 
 export class Donor extends Actor {}
 
