@@ -1,39 +1,18 @@
-import { Donor } from "./actor";
+import { IRepository } from "@/domain/repository";
+import { Project } from "./types";
+import { Repository } from "@/infrastructure/prisma-repository";
+import { db } from "@/infrastructure/client";
 
-export class Project {
-    constructor (
-        public readonly id: number, 
-        public name: string,
-        public description: string,
-        public startDate: Date,
-        public endDate: Date,
-        public status: Status,
-        private statusHistory: StatusHistory[] = []
-    ) {}
+export class ProjectService {
+    constructor(private readonly repository: IRepository<Project>) {}
 
-    transitionTo(newStatus: Status, date: Date) {
-        this.status = newStatus;
-        this.statusHistory.push({ status: newStatus, startDate: date });
+    findById(id: number): Promise<Project | null> {
+        return this.repository.findById(id);
     }
-
-    get currentStatus() {
-        return this.status;
+    getAll(): Promise<Project[]> {
+        return this.repository.getAll();
     }
 }
 
-export interface Status { id: number; name: string; }
-export interface StatusHistory { status: Status; startDate: Date; endDate?: Date }
-
-export class Currency {}
-
-export class Donation {
-    constructor(
-        public readonly id: number,
-        public donor: Donor,
-        public project: Project,
-        public currency: Currency,
-        public amount: number,
-        public date: Date,
-        public isRestrictive: boolean
-    ) {}
-}
+const projectRepository = new Repository<Project>(db.project);
+export const projects = new ProjectService(projectRepository);
