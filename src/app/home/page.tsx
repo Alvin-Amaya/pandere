@@ -1,20 +1,44 @@
+import { Box, Container, Paper, Stack, Typography } from "@mui/material";
 import { getProjects } from "./actions";
 
-export default async function Dashboard(){
-    const projects = await getProjects();
+export default async function Dashboard() {
+  const projects = await getProjects();
 
-    return (
-        <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans">
-            <div className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white sm:items-start">
-                <h1>Dashboard</h1>
-                <h2>Projects</h2>
-                {projects.map((project) => (
-                    <div key={project.id}>
-                        <h3>{project.name}</h3>
-                        <p>{project.description}</p>
-                    </div>
-                ))}
-            </div>
-        </div>
-    )
+  return (
+    <Box
+      component="main"
+      sx={{
+        display: "flex",
+        minHeight: "100vh",
+        alignItems: "center",
+        justifyContent: "center",
+        bgcolor: "background.default",
+        color: "text.primary",
+        p: 2,
+      }}
+    >
+      <Container
+        maxWidth="md"
+        sx={{
+          bgcolor: "background.paper",
+          borderRadius: 3,
+          p: { xs: 4, md: 6 },
+          boxShadow: 6,
+        }}
+      >
+        <Stack spacing={3}>
+          <Typography variant="h2">Dashboard</Typography>
+          <Typography variant="h4">Projects</Typography>
+          <Stack spacing={2}>
+            {projects.map((project) => (
+              <Paper key={project.id} sx={{ p: 3, bgcolor: "background.default" }}>
+                <Typography variant="h6">{project.name}</Typography>
+                <Typography>{project.description}</Typography>
+              </Paper>
+            ))}
+          </Stack>
+        </Stack>
+      </Container>
+    </Box>
+  );
 }

@@ -1,8 +1,24 @@
 'use server'
 
-import { projects } from "@/domain/app";
+import { projectService } from "@/domain/app";
 
 export async function getProjects() {
-    return projects.getAll();
+    return projectService.getAll();
 }
 
+export async function getMenu() {
+    return [
+        {
+            name: 'Dashboard',
+            url: '/home'
+        },
+        {
+            name: 'Poryectos',
+            url: '/home'
+        },
+        {
+            name: 'Finanzas',
+            url: '/home'
+        }
+    ]
+}
