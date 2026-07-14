@@ -13,7 +13,7 @@ export async function getMenu() {
             url: '/home'
         },
         {
-            name: 'Poryectos',
+            name: 'Proyectos',
             url: '/home'
         },
         {

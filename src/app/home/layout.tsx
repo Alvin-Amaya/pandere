@@ -24,7 +24,20 @@ export default async function myLayout({
         </Typography>
         <Stack spacing={1}>
           {menu.map((item: { name: string; url: string }) => (
-            <MuiLink key={item.name} href={item.url} color="inherit" underline="hover">
+            <MuiLink 
+              key={item.name} 
+              href={item.url} 
+              color="inherit"
+              underline="none"
+              sx={{
+                display: 'inline-block',
+                padding: '4px 8px',
+                borderRadius: '4px',
+                transition: 'background-color 0.3s',
+                '&:hover': {
+                  backgroundColor: "secondary.light"
+                }
+              }}>
               {item.name}
             </MuiLink>
           ))}
