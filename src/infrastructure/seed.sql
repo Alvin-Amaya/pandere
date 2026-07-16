@@ -132,3 +132,8 @@ INSERT INTO audit_log(user_id,table_name,record_id,action)
 VALUES
 (1,'project',1,'INSERT'),
 (1,'donation',1,'INSERT');
+
+INSERT INTO organization_has_project(organization_id, project_id)
+VALUES 
+(1, 1),
+(2, 2);

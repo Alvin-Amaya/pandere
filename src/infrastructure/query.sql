@@ -121,7 +121,15 @@ CREATE TABLE IF NOT EXISTS legal_representative_history (
 );
 CREATE INDEX idx_legal_rep_enterprise ON legal_representative_history (enterprise_id);
 
-
+CREATE TABLE IF NOT EXISTS file
+(
+    id INT NOT NULL,
+    url VARCHAR(512) NOT NULL,
+    blob_url VARCHAR(512) NOT NULL,
+    filename VARCHAR(255),
+    created_at TIMESTAMP WITH TIME ZONE NULL DEFAULT now(),
+    CONSTRAINT pk_file PRIMARY KEY (id)
+);
 -- =============================================================================
 -- MÓDULO 2: ORGANIZACIÓN, ROLES Y SEGURIDAD
 -- =============================================================================
@@ -174,6 +182,7 @@ CREATE TABLE IF NOT EXISTS users (
     role_id INT NOT NULL,
     nickname VARCHAR(50) NOT NULL,
     password VARCHAR(255) NOT NULL, -- Tamaño óptimo para hashing seguro (ej: bcrypt o argon2)
+    avatar_id INT,
     
     CONSTRAINT pk_users PRIMARY KEY (id),
     CONSTRAINT uq_users_actor UNIQUE (actor_id),
@@ -181,7 +190,9 @@ CREATE TABLE IF NOT EXISTS users (
     CONSTRAINT fk_users_actor FOREIGN KEY (actor_id)
         REFERENCES actor (id) ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT fk_users_role FOREIGN KEY (role_id)
-        REFERENCES role (id) ON DELETE RESTRICT ON UPDATE CASCADE
+        REFERENCES role (id) ON DELETE RESTRICT ON UPDATE CASCADE,
+    CONSTRAINT fk_users_avatar FOREIGN KEY (avatar_id)
+        REFERENCES file (id) ON DELETE RESTRICT ON UPDATE CASCADE
 );
 CREATE INDEX idx_users_role ON users (role_id);
 
@@ -225,6 +236,29 @@ CREATE TABLE IF NOT EXISTS project (
     
     CONSTRAINT pk_project PRIMARY KEY (id),
     CONSTRAINT chk_project_dates CHECK (end_date IS NULL OR end_date >= start_date)
+);
+
+-- Table: organization_has_project
+CREATE TABLE IF NOT EXISTS organization_has_project
+(
+    organization_id INT NOT NULL,
+    project_id INT NOT NULL,
+    
+    CONSTRAINT fk_organization_has_project_project FOREIGN KEY (project_id)
+        REFERENCES project (id) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT fk_organization_has_project_organization FOREIGN KEY (organization_id)
+        REFERENCES organization (id) ON DELETE RESTRICT ON UPDATE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS project_has_file
+(
+    project_id INT NOT NULL,
+    file_id INT NOT NULL,
+    
+    CONSTRAINT fk_project_has_file_project FOREIGN KEY (project_id)
+        REFERENCES project (id) ON DELETE CASCADE ON UPDATE CASCADE,
+    CONSTRAINT fk_project_has_file_file FOREIGN KEY (file_id)
+        REFERENCES file (id) ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 -- Table: project_has_status
