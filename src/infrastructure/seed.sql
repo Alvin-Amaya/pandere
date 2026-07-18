@@ -57,10 +57,10 @@ INSERT INTO users(actor_id,role_id,nickname,password)
 VALUES
 (1,(SELECT id FROM role WHERE name='ADMIN'),'admin','$2b$12$dummyhash');
 
-INSERT INTO project(name,description,start_date)
+INSERT INTO project(name,organization_id,description,start_date)
 VALUES
-('Agua para Todos','Pozos comunitarios','2026-01-10'),
-('Reforestación','Siembra de árboles','2026-02-01');
+('Agua para Todos',2,'Pozos comunitarios','2026-01-10'),
+('Reforestación',3,'Siembra de árboles','2026-02-01');
 
 INSERT INTO status(table_name,status_name) VALUES
 ('project','PLANNED'),
@@ -132,8 +132,3 @@ INSERT INTO audit_log(user_id,table_name,record_id,action)
 VALUES
 (1,'project',1,'INSERT'),
 (1,'donation',1,'INSERT');
-
-INSERT INTO organization_has_project(organization_id, project_id)
-VALUES 
-(1, 1),
-(2, 2);

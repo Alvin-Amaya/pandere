@@ -227,6 +227,7 @@ CREATE INDEX idx_transitions_to ON allowed_transitions (to_status_id);
 -- Table: project
 CREATE TABLE IF NOT EXISTS project (
     id INT GENERATED ALWAYS AS IDENTITY,
+    organization_id INT NOT NULL,
     name VARCHAR(150) NOT NULL,
     description TEXT NULL, -- TEXT maneja strings dinámicos extensos de forma más óptima en PostgreSQL
     start_date DATE NULL,
@@ -235,19 +236,9 @@ CREATE TABLE IF NOT EXISTS project (
     deleted_at TIMESTAMP WITH TIME ZONE NULL,
     
     CONSTRAINT pk_project PRIMARY KEY (id),
+    CONSTRAINT fk_project_organization FOREIGN KEY (organization_id)
+        REFERENCES organization (id) ON DELETE RESTRICT ON UPDATE CASCADE,
     CONSTRAINT chk_project_dates CHECK (end_date IS NULL OR end_date >= start_date)
-);
-
--- Table: organization_has_project
-CREATE TABLE IF NOT EXISTS organization_has_project
-(
-    organization_id INT NOT NULL,
-    project_id INT NOT NULL,
-    
-    CONSTRAINT fk_organization_has_project_project FOREIGN KEY (project_id)
-        REFERENCES project (id) ON DELETE CASCADE ON UPDATE CASCADE,
-    CONSTRAINT fk_organization_has_project_organization FOREIGN KEY (organization_id)
-        REFERENCES organization (id) ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS project_has_file
@@ -255,6 +246,7 @@ CREATE TABLE IF NOT EXISTS project_has_file
     project_id INT NOT NULL,
     file_id INT NOT NULL,
     
+    CONSTRAINT pk_project_has_file PRIMARY KEY (project_id, file_id),
     CONSTRAINT fk_project_has_file_project FOREIGN KEY (project_id)
         REFERENCES project (id) ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT fk_project_has_file_file FOREIGN KEY (file_id)

@@ -1,26 +1,25 @@
-import { IRepository } from "@/domain/repository";
+import { WhereConditions, IncludeMap, IRepository } from "@/domain/repository";
 
-export interface IDataModel<T> {
-  findMany(args?: { where?: Record<string, any> }): Promise<T[]>;
-  findUnique(args: { 
-    where: { id: number }; 
-    include?: Record<string, boolean | any>; 
-  }): Promise<T | null>;
-  create(args: { data: any }): Promise<T>;
-  update(args: { where: { id: number }; data: any }): Promise<T>;
-  delete(args: { where: { id: number } }): Promise<any>;
+export type CreateInput<T> = Omit<T, 'id'>;
+export type UpdateInput<T> = Partial<Omit<T, 'id'>>;
+
+export interface IDataModel<T, TArgs = Record<string, unknown>> {
+  findMany(args?: TArgs): Promise<T[]>;
+  findUnique(args?: TArgs): Promise<T | null>;
+  create(args: { data: CreateInput<T> }): Promise<T>;
+  update(args: { where: { id: number }; data: UpdateInput<T> }): Promise<T>;
+  delete(args: { where: { id: number } }): Promise<T | void>;
 }
-
 
 export class Repository<T> implements IRepository<T> {
   constructor(protected model: IDataModel<T>) { }
 
-  async findById(id: number, include?: Record<string, boolean | any>): Promise<T | null> {
+  async findById(id: number, include?: Record<string, boolean | IncludeMap>): Promise<T | null> {
     return await this.model.findUnique({ where: { id }, include });
   }
 
-  async getAll(): Promise<T[]> {
-    return await this.model.findMany();
+  async getAll(include?: IncludeMap): Promise<T[]> {
+    return await this.model.findMany({ include });
   }
 
   async create(item: Omit<T, "id">): Promise<T> {

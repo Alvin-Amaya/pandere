@@ -14,7 +14,7 @@ export async function getMenu() {
         },
         {
             name: 'Proyectos',
-            url: '/home'
+            url: '/home/projects'
         },
         {
             name: 'Finanzas',
