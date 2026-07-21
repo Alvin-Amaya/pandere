@@ -1,4 +1,4 @@
-import { WhereConditions, IncludeMap, IRepository, CreateInput, UpdateInput } from "@/domain/repository";
+import { IRepository, CreateInput, UpdateInput, Options } from "@/domain/repository";
 
 export interface IDataModel<T, TArgs = Record<string, unknown>> {
   findMany(args?: TArgs): Promise<T[]>;
@@ -11,12 +11,12 @@ export interface IDataModel<T, TArgs = Record<string, unknown>> {
 export class Repository<T> implements IRepository<T> {
   constructor(protected model: IDataModel<T>) { }
 
-  async findById(id: number, include?: Record<string, boolean | IncludeMap>): Promise<T | null> {
-    return await this.model.findUnique({ where: { id }, include });
+  async findById(id: number, options?: Options<T>): Promise<T | null> {
+    return await this.model.findUnique({ where: { id }, ...options });
   }
 
-  async getAll(include?: IncludeMap): Promise<T[]> {
-    return await this.model.findMany({ include });
+  async getAll(options?: Options<T>): Promise<T[]> {
+    return await this.model.findMany({ ...options });
   }
 
   async create(item: CreateInput<T>): Promise<T> {

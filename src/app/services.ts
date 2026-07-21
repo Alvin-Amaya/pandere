@@ -2,7 +2,7 @@ import { Repository } from "@/infrastructure/prisma-repository";
 import { db } from "@/infrastructure/client";
 import { Currency, Donation, Enterprise, Project, User } from "@/domain/types";
 import { ProjectService } from "@/domain/project";
-import UserService from "@/domain/user";
+import { UserService } from "@/domain/actors";
 import { Service } from "@/domain/service";
 
 const projectRepository = new Repository<Project>(db.project);

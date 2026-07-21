@@ -1,4 +1,4 @@
-export interface QueryOperators<V> {
+interface QueryOperators<V> {
     equals?: V;
     contains?: V extends string ? string : never;
     startsWith?: V extends string ? string : never;
@@ -11,24 +11,29 @@ export interface QueryOperators<V> {
     notIn?: V[];
 }
 
-export type WhereConditions<T> = {
+type WhereConditions<T> = {
     [K in keyof T]?: T[K] | QueryOperators<T[K]>;
 };
 
 export type CreateInput<T> = Omit<T, 'id'> & Record<string, unknown>;
 export type UpdateInput<T> = Partial<Omit<T, 'id'>> & Record<string, unknown>;
 
-export interface Where<T> {
+interface Where<T> {
     where: WhereConditions<T>;
 }
 
-export interface IncludeMap {
+interface IncludeMap {
     [key: string]: boolean | IncludeMap;
 }
 
+export interface Options<T> {
+    where?: Where<T>;
+    include?: IncludeMap;
+}
+
 export interface IRepository<T> {
-    findById(id: number, include?: Record<string, boolean | IncludeMap>): Promise<T | null>;
-    getAll(include?: IncludeMap): Promise<T[]>;
+    findById(id: number, options?: Options<T>): Promise<T | null>;
+    getAll(options?: Options<T>): Promise<T[]>;
     create(item: CreateInput<T>): Promise<T>;
     update(id: number, item: UpdateInput<T>): Promise<T>;
     delete(id: number): Promise<T | void>;

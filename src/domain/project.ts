@@ -28,10 +28,12 @@ export class ProjectService extends Service<Project> {
 
     async getAll(): Promise<ProjectDTO[]> {
         const projects = (await this.repository.getAll({
-            organization: true,
-            project_has_skill: {
-                include: {
-                    skill: true
+            include: {
+                organization: true,
+                project_has_skill: {
+                    include: {
+                        skill: true
+                    }
                 }
             }
         })) as ProjectDTO[];

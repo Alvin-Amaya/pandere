@@ -1,14 +1,14 @@
-import { IncludeMap, IRepository } from "@/domain/repository";
+import { Options, IRepository } from "@/domain/repository";
 
 export class Service<T> {
     constructor(public readonly repository: IRepository<T>) {}
 
-    async findById(id: number, include?: IncludeMap): Promise<T | null> {
-        return await this.repository.findById(id, include);
+    async findById(id: number, options?: Options<T>): Promise<T | null> {
+        return await this.repository.findById(id, options);
     }
     
-    async getAll(include?: IncludeMap): Promise<T[]> {
-        return await this.repository.getAll(include);
+    async getAll(options?: Options<T>): Promise<T[]> {
+        return await this.repository.getAll(options);
     }
 
     async create(item: Omit<T, 'id'>): Promise<T> {

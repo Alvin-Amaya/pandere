@@ -1,6 +1,6 @@
 'use server'
 
-import { projectService } from "./services";
+import { projectService } from "@/app/services";
 
 export async function getProjects() {
     return projectService.getAll();
