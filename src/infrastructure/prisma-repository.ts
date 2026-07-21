@@ -1,7 +1,4 @@
-import { WhereConditions, IncludeMap, IRepository } from "@/domain/repository";
-
-export type CreateInput<T> = Omit<T, 'id'>;
-export type UpdateInput<T> = Partial<Omit<T, 'id'>>;
+import { WhereConditions, IncludeMap, IRepository, CreateInput, UpdateInput } from "@/domain/repository";
 
 export interface IDataModel<T, TArgs = Record<string, unknown>> {
   findMany(args?: TArgs): Promise<T[]>;
@@ -22,11 +19,11 @@ export class Repository<T> implements IRepository<T> {
     return await this.model.findMany({ include });
   }
 
-  async create(item: Omit<T, "id">): Promise<T> {
+  async create(item: CreateInput<T>): Promise<T> {
     return await this.model.create({ data: item });
   }
 
-  async update(id: number, item: Partial<Omit<T, "id">>): Promise<T> {
+  async update(id: number, item: UpdateInput<T>): Promise<T> {
     return await this.model.update({
       where: { id },
       data: item,

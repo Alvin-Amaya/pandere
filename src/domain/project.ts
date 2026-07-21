@@ -15,21 +15,11 @@ interface OrganizationSummary {
 interface ProjectDTO extends Project {
     project_has_skill?: ProjectHasSkill[];
     organization?: OrganizationSummary | null;
+    skills: Skill[];
 }
 
 export class ProjectService extends Service<Project> {
-    async getSkills(projectId: number): Promise<Skill[]> {
-        const project = (await this.repository.findById(projectId, {
-            include: {
-                project_has_skill: {
-                    include: {
-                        skill: true
-                    }
-                }
-            }
-        })) as ProjectDTO;
-
-        if (!project) return [];
+    private skills(project: ProjectDTO){
         const relations = project.project_has_skill ?? [];
         return relations
             .map(ps => ps.skill)
@@ -37,37 +27,51 @@ export class ProjectService extends Service<Project> {
     }
 
     async getAll(): Promise<ProjectDTO[]> {
-        const projects = await this.repository.getAll({
-            // include: {
-                organization: true,
-            // },
-        });
+        const projects = (await this.repository.getAll({
+            organization: true,
+            project_has_skill: {
+                include: {
+                    skill: true
+                }
+            }
+        })) as ProjectDTO[];
 
         return projects.map((project) => ({
             ...project,
-            // organization: project.organization_has_project?.[0]?.organization ?? null,
+            skills: this.skills(project),
         }));
     }
 
-    // async addSkill(projectId: number, skill: Skill): Promise<void> {
-    //     const project = await this.repository.findById(projectId, {
-    //         include: {
-    //             project_has_skill: true
-    //         }
-    //     });
+    async addSkill(projectId: number, skill: Skill): Promise<void> {
+        const project = await this.repository.findById(projectId, {
+            include: {
+                project_has_skill: {
+                    include: {
+                        skill: true
+                    }
+                }
+            }
+        }) as ProjectDTO;
 
-    //     if (!project) throw new Error("Project not found");
+        if (!project) throw new Error("Project not found");
 
-    //     const existingSkills = (project as any).project_has_skill ?? [];
-    //     const skillExists = existingSkills.some(
-    //         (ps: any) => ps.skillId === skill.id
-    //     );
+        project.skills = this.skills(project);
+        const existingSkills = project.skills ?? [];
+        const skillExists = existingSkills.some(
+            (ps: Skill) => ps.id === skill.id
+        );
 
-    //     if (!skillExists) {
-    //         existingSkills.push({ projectId, skillId: skill.id });
-    //         await this.repository.update(projectId, {
-    //             project_has_skill: existingSkills
-    //         });
-    //     }
-    // }
+        if (!skillExists) {
+            await this.repository.update(projectId, {
+                project_has_skill: {
+                    create: {
+                        skill: {
+                            connect: { id: skill.id }
+                        }
+                    }
+                }
+            });
+        }
+    }
+
 }
